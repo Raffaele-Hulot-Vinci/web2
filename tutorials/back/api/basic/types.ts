@@ -1,3 +1,4 @@
+
 interface Pizza {
   id: number;
   title: string;
@@ -19,4 +20,6 @@ interface Drink {
   price: number;
 }
 
-export type { Pizza, NewPizza, PizzaToUpdate, Drink };
+type NewDrink = Omit<Drink, "id">;
+
+export type { Pizza, NewPizza, PizzaToUpdate, Drink, NewDrink };

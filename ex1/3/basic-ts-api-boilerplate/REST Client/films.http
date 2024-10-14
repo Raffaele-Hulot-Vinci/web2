@@ -1,0 +1,14 @@
+@baseUrl = http://localhost:3000
+
+### show stuff
+GET {{baseUrl}}/films
+
+### add this specifically
+POST {{baseUrl}}/films
+Content-Type: application/json
+
+{
+    "title": "Hardcore Henry",
+    "director": "Ilia Naïchouller",
+    "duration": 96
+}

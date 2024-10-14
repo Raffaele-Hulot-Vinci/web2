@@ -1,4 +1,3 @@
-
 import { Router } from "express";
 
 import path from "node:path";
@@ -36,12 +35,6 @@ const defaultPizzas: Pizza[] = [
     content: "Tomates, Mozarella, Chorizo piquant, Jalapenos",
   },
 ];
-
-router.get("/error", (_req, _res, _next) => {
-  throw new Error("This is an error");
-  // equivalent of next(new Error("This is an error"));
-});
-
 
 /* Read all the pizzas from the menu
    GET /pizzas?order=title : ascending order by title
