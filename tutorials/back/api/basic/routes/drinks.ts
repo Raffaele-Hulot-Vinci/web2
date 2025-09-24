@@ -113,11 +113,7 @@ router.post("/", (req, res) => {
   const { title, image, volume, price } = body as NewDrink;
 
 
-  const nextId =
-
-    drinks.reduce((maxId, drink) => (drink.id > maxId ? drink.id : maxId), 0) +
-
-    1;
+  const nextId = drinks.reduce((maxId, drink) => (drink.id > maxId ? drink.id : maxId), 0) + 1;
 
 
   const newDrink: Drink = {
