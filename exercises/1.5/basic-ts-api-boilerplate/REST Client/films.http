@@ -1,0 +1,36 @@
+@baseURL = http://localhost:3000
+
+### show all films
+GET {{baseURL}}/films
+
+### show film 1
+GET {{baseURL}}/films/1
+
+### show film with duration >= 100 minutes
+GET {{baseURL}}/films?minimum-duration=100
+
+### create new film 
+POST {{baseURL}}/films
+Content-Type: application/json
+
+{
+    "title": "2001: A Space Odyssey",
+    "director": "Stanley Kubrick",
+    "duration": 139,
+    "budget": 10500000
+}
+
+### fail to create film due to no title
+POST {{baseURL}}/films
+Content-Type: application/json
+
+{
+    "director": "Peter Jackson",
+    "duration": 178
+}
+
+### fail to show film due to negative duration
+GET {{baseURL}}/films?minimum-duration=-100
+
+### fail to show film due to negative list position
+GET {{baseURL}}/films/-1

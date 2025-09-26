@@ -34,6 +34,10 @@ router.get("/", (req, res) => {
     if(!req.query["minimum-duration"]){
         return res.json(ffilms);
     }
+
+    if(Number(req.query["minimum-duration"]) <= 0){
+        res.status(400).send("minimum film duration must be strictly positive");
+    }
     
     const FilteredFilms = ffilms.filter((film) => {
         return film.duration >= Number(req.query["minimum-duration"]);
@@ -43,6 +47,9 @@ router.get("/", (req, res) => {
 });
 
 router.get("/:id", (req, res) => {
+    if(Number(req.params.id) <= 0){
+        res.status(400).send("list starts at 1");
+    }
     const film = films[Number(req.params.id)-1];
 
     return res.json(film);
@@ -50,7 +57,9 @@ router.get("/:id", (req, res) => {
 
 router.post("/", (req, res) => {
     const body: unknown = req.body;
-    if(!body || 
+
+    if(
+        !body || 
         typeof body !== "object" || 
 
         !("title" in body) || 
@@ -62,6 +71,10 @@ router.post("/", (req, res) => {
         !body.title.trim()
     ){
         return res.status(400).send("title and director must be present");
+    }
+
+    if(inFilms(body.title, body.director)){
+        return res.status(409).send("film already listed");
     }
 
     if(
@@ -95,5 +108,14 @@ router.post("/", (req, res) => {
 
     return res.json(newFilm);
 });
+
+function inFilms(title: string, director: string) {
+    for(let i=0; i<films.length; i++){
+        if(films[i].title == title && films[i].director == director){
+            return true;
+        }
+    }
+    return false;
+}
 
 export default router;
