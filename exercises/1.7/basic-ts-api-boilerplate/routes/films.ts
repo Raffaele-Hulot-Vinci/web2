@@ -1,8 +1,11 @@
 import { Router } from "express";
-
-//import path from "node:path";
 import { Film } from "../types";
 import { NewFilm } from "../types";
+import { parse, serialize } from "../utils/json";
+
+import path from "node:path";
+
+const jsonDbPath = path.join(__dirname, "../data/films.json");
 
 const router = Router();
 
@@ -28,7 +31,7 @@ const films: Film[] = [
 ];
 
 router.get("/", (req, res) => {
-    const ffilms = films;
+    const ffilms = parse(jsonDbPath, films);
 
     if (!req.query["minimum-duration"]) {
         return res.json(ffilms);
@@ -88,7 +91,9 @@ router.post("/", (req, res) => {
         return res.status(400).send("budget must be a positive but may be omitted");
     }
 
-    const nextId = films.reduce((maxId, film) => (film.id > maxId ? film.id : maxId), 0) + 1;
+    const ffilms = parse(jsonDbPath, films);
+
+    const nextId = ffilms.reduce((maxId, film) => (film.id > maxId ? film.id : maxId), 0) + 1;
 
     const { title, director, duration, budget, description, imageURL } = body as NewFilm;
 
@@ -109,7 +114,7 @@ router.post("/", (req, res) => {
     }
 
     films.push(newFilm);
-
+    serialize(jsonDbPath, ffilms);
     return res.json(newFilm);
 });
 
@@ -120,10 +125,13 @@ router.delete("/:id", (req, res) => {
         return res.status(400).send("list starts at 1");
     }
 
+    const ffilms = parse(jsonDbPath, films);
+
     let delFilm;
-    for (let index = 0; index < films.length; index++) {
-        if (films[index].id == id) {
-            delFilm = films.splice(index, 1);
+    for (let index = 0; index < ffilms.length; index++) {
+        if (ffilms[index].id == id) {
+            delFilm = ffilms.splice(index, 1);
+            serialize(jsonDbPath, ffilms);
             break;
         }
     }
@@ -137,13 +145,14 @@ router.delete("/:id", (req, res) => {
 
 router.patch("/:id", (req, res) => {
     const id = Number(req.params.id);
-    const film = films.find((film) => film.id === id);
-    if (!film) {
-        return res.sendStatus(404);
-    }
-
     if (id <= 0) {
         return res.status(400).send("list starts at 1");
+    }
+
+    const ffilms = parse(jsonDbPath, films);
+    const film = ffilms.find((film) => film.id === id);
+    if (!film) {
+        return res.sendStatus(404);
     }
 
     const body: unknown = req.body;
@@ -199,6 +208,8 @@ router.patch("/:id", (req, res) => {
         film.imageURL = imageURL;
     }
 
+    serialize(jsonDbPath, ffilms);
+
     return res.json(film);
 });
 
@@ -243,10 +254,12 @@ router.put("/:id", (req, res) => {
         return res.status(400).send("budget must be a positive but may be omitted");
     }
 
+    const ffilms = parse(jsonDbPath, films);
+
     const { title, director, duration, budget, description, imageURL } = body as Film;
 
-    for (let i = 0; i < films.length; i++) {
-        if (films[i].id == id) {
+    for (let i = 0; i < ffilms.length; i++) {
+        if (ffilms[i].id == id) {
             const replaceFilm: Film = {
                 id: id,
                 title: title,
@@ -262,7 +275,8 @@ router.put("/:id", (req, res) => {
             if (imageURL) {
                 replaceFilm.imageURL = imageURL;
             }
-            films[i] = replaceFilm;
+            ffilms[i] = replaceFilm;
+            serialize(jsonDbPath, ffilms);
             return res.json(replaceFilm);
         }
     }
@@ -283,7 +297,9 @@ router.put("/:id", (req, res) => {
     if (imageURL) {
         newFilm.imageURL = imageURL;
     }
-    films.push(newFilm);
+    
+    ffilms.push(newFilm);
+    serialize(jsonDbPath, ffilms);
     return res.json(newFilm);
 });
 
