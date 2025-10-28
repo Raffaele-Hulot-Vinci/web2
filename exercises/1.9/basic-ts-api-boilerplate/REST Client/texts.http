@@ -1,0 +1,116 @@
+@baseURL = http://localhost:3000
+@textsURL = {{baseURL}}/texts
+
+### GET all texts
+GET {{textsURL}}
+
+### GET all texts that are easy
+GET {{textsURL}}?level=easy
+
+### GET all texts that are medium
+GET {{textsURL}}?level=medium
+
+### GET all texts that are hard
+GET {{textsURL}}?level=hard
+
+### fail to GET due to bad level input
+GET {{textsURL}}?level=wrong
+
+### GET "test" using existing id
+GET {{textsURL}}/7272e1a4-d07b-4fac-9586-7b0da2399c50
+
+### fail to GET by using wrong id
+GET {{textsURL}}/wrongwrongwrongwrongwrongwrongwrongw
+
+### POST new text
+POST {{textsURL}}
+Content-Type: application/json
+
+{
+    "content": "testing",
+    "level": "easy"
+}
+
+### fail to POST new text due to missing content
+POST {{textsURL}}
+Content-Type: application/json
+
+{
+    "level": "easy"
+}
+
+### fail to POST new text due to missing level
+POST {{textsURL}}
+Content-Type: application/json
+
+{
+    "content": "test"
+}
+
+### fail to POST new text due to invalid level
+POST {{textsURL}}
+Content-Type: application/json
+
+{
+    "content": "test",
+    "level": "wrong"
+}
+
+### DELETE a text
+DELETE {{textsURL}}/7272e1a4-d07b-4fac-9586-7b0da2399c50
+
+### recreate deleted text
+POST {{textsURL}}
+Content-Type: application/json
+
+{
+    "id": "7272e1a4-d07b-4fac-9586-7b0da2399c50",
+    "content": "test",
+    "level": "easy"
+}
+
+### PUT text with existing id ee2f76c0-ab61-488d-a3b6-714aa8c7ffa7 to be wrong medium
+PUT {{textsURL}}/ee2f76c0-ab61-488d-a3b6-714aa8c7ffa7
+Content-Type: application/json
+
+{
+    "content": "wrong",
+    "level": "medium"
+}
+
+### PUT text with existing id ee2f76c0-ab61-488d-a3b6-714aa8c7ffa7 to be right easy
+PUT {{textsURL}}/ee2f76c0-ab61-488d-a3b6-714aa8c7ffa7
+Content-Type: application/json
+
+{
+    "content": "right",
+    "level": "easy"
+}
+
+### fail to PUT text with existing id ee2f76c0-ab61-488d-a3b6-714aa8c7ffa7 due to missing level
+PUT {{textsURL}}/ee2f76c0-ab61-488d-a3b6-714aa8c7ffa7
+Content-Type: application/json
+
+{
+    "content": "wrong"
+}
+
+### fail to PUT text with existing id ee2f76c0-ab61-488d-a3b6-714aa8c7ffa7 due to missing content
+PUT {{textsURL}}/ee2f76c0-ab61-488d-a3b6-714aa8c7ffa7
+Content-Type: application/json
+
+{
+    "level": "medium"
+}
+
+### PUT text with unused id ee3f76c0-ab61-487d-a3b6-714aa0c7ffa5 leading to its creation
+PUT {{textsURL}}/ee3f76c0-ab61-487d-a3b6-714aa0c7ffa5
+Content-Type: application/json
+
+{
+    "content": "created",
+    "level": "easy"
+}
+
+### DELET previously created text
+DELETE {{textsURL}}/ee3f76c0-ab61-487d-a3b6-714aa0c7ffa5
